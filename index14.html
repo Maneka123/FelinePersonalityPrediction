@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Characteristics Prediction</title>
+
+    <style>
+      /* CSS for styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+}
+
+#container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#upload-image-form {
+    margin-bottom: 20px;
+}
+
+#prediction-result {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#prediction-result h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+#prediction-result p {
+    margin-bottom: 10px;
+    text-align: left; /* Align labels to the left */
+    line-height: 1.6;
+}
+
+#prediction-result p span.label {
+    font-weight: bold;
+    color: #555;
+}
+
+#prediction-result p span.value {
+    color: #777;
+}
+
+#prediction-error {
+    color: red;
+}
+
+#image-preview {
+    margin: 20px auto;
+    text-align: center;
+}
+
+#selected-image {
+    max-width: 40%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#predictButton{
+
+    display: inline-block;
+                    outline: none;
+                    cursor: pointer;
+                    font-size: 14px;
+                    line-height: 1;
+                    border-radius: 500px;
+                    transition-property: background-color,border-color,color,box-shadow,filter;
+                    transition-duration: .3s;
+                    border: 1px solid transparent;
+                    letter-spacing: 2px;
+                    min-width: 160px;
+                    text-transform: uppercase;
+                    white-space: normal;
+                    font-weight: 700;
+                    text-align: center;
+                    padding: 17px 48px;
+                    color: #fff;
+                    background-color: #1ED760;
+                    height: 48px;
+                    :hover{
+                        transform: scale(1.04);
+                        background-color: #21e065;
+                    }
+                
+}
+
+#clear-button{
+
+    display: inline-block;
+                    outline: none;
+                    cursor: pointer;
+                    font-size: 14px;
+                    line-height: 1;
+                    border-radius: 500px;
+                    transition-property: background-color,border-color,color,box-shadow,filter;
+                    transition-duration: .3s;
+                    border: 1px solid transparent;
+                    letter-spacing: 2px;
+                    min-width: 160px;
+                    text-transform: uppercase;
+                    white-space: normal;
+                    font-weight: 700;
+                    text-align: center;
+                    padding: 17px 48px;
+                    color: #fff;
+                    background-color: #d11ed7;
+                    height: 48px;
+                    :hover{
+                        transform: scale(1.04);
+                        background-color: #21e065;
+                    }
+
+
+                   
+                
+                
+}
+#container h1 {
+    border: 2px solid #1ED760; /* Color of the border */
+    padding: 10px; /* Padding inside the border */
+    display: inline-block; /* Display as inline block to fit the content */
+}
+
+.container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .breed-image {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            text-align: center;
+            width: 300px; /* Adjust width as needed */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.2s; /* Animation on hover */
+        }
+        .breed-image:hover {
+            transform: scale(1.05); /* Slightly enlarge images on hover */
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+        .breed-name {
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+        .description {
+            padding: 10px;
+        }
+
+
+    </style>
+    
+</head>
+<body>
+    <a href="#supportedBreedsSection2">Supported Breeds</a>
+    <div id="container">
+        <h1>Cat-titude Clues: Unravel Your Cat's Mystery</h1>
+        <h2>Embark on a Whisker-Twirling Adventure: Predict Your Cat's Personality, Stamina Secrets, and Mystical Meows with Just a Photo...!!!</h2>
+        <form id="upload-image-form" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(event)">
+            <button id="predictButton" type="submit">Predict</button>
+            <button type="button" id="clear-button">Clear</button>  
+        </form>
+        
+        <div id="image-preview" style="display: none;">
+            <h2>Selected Image Preview</h2>
+            <img id="selected-image" src="" alt="Selected Image">
+        </div>
+
+        <div id="prediction-result">
+            <p><span class="label">Detected cat faces :</span> <span class="value" id="faces">Number of detected cat faces:</span></p>
+            <h2>Prediction Result</h2>
+            <p id="prediction-error"></p>
+            <p><span class="label">Breed 1:</span> <span class="value" id="breed1"></span></p>
+            <p><span class="label">Breed 2:</span> <span class="value" id="breed2"></span></p>
+            <p><span class="label">Breed 3:</span> <span class="value" id="breed3"></span></p><br>
+            <p><span class="label">Stamina:</span> <span class="value" id="health"></span></p>
+            <p><span class="label">Stamina confidence:</span> <span class="value" id="health-confidence"></span></p><br>
+            <p><span class="label">Emotion:</span> <span class="value" id="emotion"></span></p>
+            <p><span class="label">Emotion confidence:</span> <span class="value" id="emotion-confidence"></span></p><br>
+            <p><span class="label">Age:</span> <span class="value" id="age"></span></p>
+            <p><span class="label">Age confidence:</span> <span class="value" id="age-confidence"></span></p><br>
+            <p><span class="label">Gender:</span> <span class="value" id="gender"></span></p>
+            <p><span class="label">Gender confidence:</span> <span class="value" id="gender-confidence"></span></p>
+        </div>
+        
+    </div>
+    <br><br><br><br><br><br>
+    <div id="supportedBreedsSection2"><br><br>
+    <center><h1 >SUPPORTED BREEDS</h1></center>
+    <div class="container" id="supportedBreedsSection">
+        
+        <!-- Assuming you have a static URL path for your images -->
+        <div class="breed-image">
+            <div class="breed-name">ABYSSINIAN</div>[individual hairs are multicolored]
+            <!-- Assuming your Flask app is named 'app' -->
+<img src="{{ url_for('static', filename='abyssinian1.jpg') }}" alt="Abyssinian">
+
+            
+            <div class="description">
+                <b>About</b>
+    The Abyssinian is a breed of domestic short-haired cat with a distinctive "ticked" tabby coat, in which individual hairs are banded with different colors. They are also known simply as Abys. The first members of the breed to be exhibited in England were brought there from Abyssinia, whence the name. 
+    <br><br><b>Origin:</b> Ethiopia, South East Asia
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b>Curious, Sensible, Loyal, Intelligent, Willful, Extroverted
+    <br><br><b>CFA:</b> standard
+    <br><br><b>Common nicknames:</b> Abys
+    
+    <br><br><b>Fun Fact:</b>Elegantly wild with a ticked coat, Abyssinians are playful explorers.
+            </div>
+        </div>
+        <!-- Repeat the same structure for other breeds -->
+        <!-- Example for American Shorthair -->
+        <div class="breed-image">
+            <div class="breed-name">AMERICAN SHORTHAIR</div>[stripes]
+            <img src="{{ url_for('static', filename='american_shorthair.jpg') }}" alt="Abyssinian">
+            
+            <div class="description">
+                <b>About</b>
+                The American Shorthair is a breed of domestic cat believed to be descended from European cats brought to North America by early settlers to protect valuable cargo from mice and rats. According to the Cat Fanciers' Association, it was the eighth most popular pedigreed cat in the world for 2020
+    <br><br><b>Origin:</b> Europe, North America
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Gentle, Companionable, Robust, Familial, Quiet, Playful
+    <br><br><b>CFA:</b> standard
+    <br><br><b>Colors:</b>  Black, White, Brown, Grey, Silver, Beige, Cream
+    <br><br><b>Fun fact:</b>Sturdy and friendly, they're adaptable hunters with a heart of gold.
+            </div>
+        </div>
+        <!-- Repeat this structure for other breeds -->
+    
+        <div class="breed-image">
+            <div class="breed-name">BALINESE</div>[have color points on their ears, face, paws, and tail.]
+            <img src="{{ url_for('static', filename='balinese.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Balinese is a long-haired breed of domestic cat with Siamese-style point coloration and sapphire-blue eyes. The Balinese is also known as the purebred long-haired Siamese since it originated as a natural mutation of that breed and hence is essentially the same cat but with a medium-length silky coat and a distinctively plumed tail
+    <br><br><b>Origin:</b> United States
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Curious, Affectionate, Alert, Clownish, Demonstrative, Playful
+    <br><br><b>CFA:</b> standard
+    <!--<br><br><b>Colors:</b>  Black, White, Brown, Grey, Silver, Beige, Cream-->
+    <br><br><b>Fun fact:</b>Siamese elegance meets flowing locks, Balinese are beauty in motion.
+            </div>
+        </div>
+    
+        <div class="breed-image">
+            <div class="breed-name">BENGAL</div>[spots]
+            <img src="{{ url_for('static', filename='bengal.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Bengal cat is a breed of hybrid cat created from crossing of an Asian leopard cat (Prionailurus bengalensis), with domestic cats, especially the spotted Egyptian Mau. It is then usually bred with a breed that demonstrates a friendlier personality, because after breeding a domesticated cat with a wildcat, its friendly personality may not manifest in the kitten. The breed's name derives from the leopard cat's taxonomic name
+    <br><br><b>Origin:</b> United States
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Curious, Friendly, Affectionate, Alert, Confident, Dependable
+    <br><br><b>CFA:</b> standard
+    <<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    <br><br><b>Fun fact:</b> Leopard-like in appearance, Bengals are energetic hunters with a playful streak.</div>
+        </div>
+    
+        <div class="breed-image">
+            <div class="breed-name">BIRMAN</div>[Birmans also have color points, but they are typically limited to their ears, face, and paws, with the addition of white "gloves" on their front paws.]
+            <img src="{{ url_for('static', filename='birman.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Birman, also called the "Sacred Cat of Burma", is a domestic cat breed. The Birman is a long-haired, colour-pointed cat distinguished by a silky coat, deep blue eyes, and contrasting white "gloves" on each paw.
+    
+    The breed name is derived from Birmanie, the French form of Burma. The breed was first recognised in 1925 in France. 
+    <br><br><b>Origin:</b> Myanmar (Burma), France
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b>  Undemanding, Gentle, Quiet, Active, Playful
+    <br><br><b>CFA:</b> standard
+    <br><br><b>Fun fact:</b> With mesmerizing blue eyes and a luxurious coat, Birmans are gentle companions.
+    <<!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> </div>
+        </div>
+    
+        <div class="breed-image">
+            <div class="breed-name">BOMBAY</div>[black]
+            <img src="{{ url_for('static', filename='bombay.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Bombay cat is a short-haired breed of domestic cat. Bombays are glossy solid black cats with a muscular build, and have characteristic large bright copper-golden eyes.The breed is named after the Indian city of Bombay (Mumbai),[4] referring to the habitat of the Indian black leopard.
+    
+    There exist two different variants of Bombay breed; the American Bombay and the British Bombay, which are both referred to as just Bombay. 
+    <br><br><b>Origin:</b> United States, Thailand
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Fun-loving, Friendly, Affectionate, Alert, Extroverted
+    <br><br><b>CFA:</b> standard
+    <!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> 
+    <br><br><b>Common nicknames:</b> Parlor Panther
+    <br><br><b>Fun fact:</b> Sleek and black like a mini panther, Bombays are affectionate shadows.
+    </div>
+        </div>
+    
+        <div class="breed-image">
+            <div class="breed-name">BRITISH SHORTHAIR</div>[have a sturdy and muscular build]
+            <img src="{{ url_for('static', filename='britishShorthair.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The British Shorthair is the pedigreed version of the traditional British domestic cat, with a distinctively stocky body, thick coat, and broad face. The most familiar colour variant is the "British Blue", with a solid grey-blue coat, pineapple eyes, and a medium-sized tail.
+    <br><br><b>Origin:</b> Great Britain
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Undemanding, Intelligent, Easygoing, Affectionate, Quiet
+    <br><br><b>TICA:</b> standard
+    <!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> 
+    <br><br><b>Other names:</b> British Blue (legacy)
+    <br><br><b>Fun fact:</b> Chunky and plush, British Shorthairs are the cuddly teddy bears of the cat world.
+    </div>
+        </div>
+    
+    
+        <div class="breed-image">
+            <div class="breed-name">PERSIAN</div>[Persians come in a wide variety of colors and patterns, including solid, shaded, and tabby, but they do not have color points like Balinese and Birman cats.]
+            <img src="{{ url_for('static', filename='persian.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Persian cat, also known as the Persian Longhair, is a long-haired breed of cat characterised by a round face and short muzzle. The first documented ancestors of Persian cats might have been imported into Italy from Khorasan as early as around 1620, however, this has not been proven.
+    <br><br><b>Origin:</b>  Iran, Afghanistan
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Sweet-tempered, Gentle, Adaptable, Charming, Communicative, Playful
+    <br><br><b>Life Span:</b> 2-17 years
+    <!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> 
+    <br><br><b>Other names:</b>  Persian longhair, Shirazi
+    <br><br><b>Fun fact:</b>Fluffy and flat-faced, Persians are regal couch potatoes with a soft spot for affection.
+    </div>
+        </div>
+    
+    
+        <div class="breed-image">
+            <div class="breed-name">SIAMESE</div>[slender body and blue eyes]
+            <img src="{{ url_for('static', filename='siamese.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Siamese cat is one of the first distinctly recognised breeds of Asian cat. Derived from the Wichianmat landrace, one of several varieties of cats native to Thailand, the original Siamese became one of the most popular breeds in Europe and North America in the 19th century. 
+    <br><br><b>Origin:</b>  Thailand
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Sociable, Intelligent, Affectionate, Sensitive, Vocal, Playful
+    
+    <!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> 
+    <br><br><b>Common nicknames:</b>   Meezer, Mese
+    <br><br><b>Fun fact:</b> Sleek and vocal with piercing blue eyes, Siamese are affectionate chatterboxes.
+    </div>
+        </div>
+    
+    
+        <div class="breed-image">
+            <div class="breed-name">SPHYNX</div>[hairless appearance]
+            <img src="{{ url_for('static', filename='sphynx.jpg') }}" alt="Abyssinian">
+            <div class="description">
+                <b>About</b>
+                The Sphynx cat also known as the Canadian Sphynx, is a breed of cat known for its lack of fur. Hairlessness in cats is a naturally occurring genetic mutation, and the Sphynx was developed through selective breeding of these animals, starting in the 1960s. 
+    <br><br><b>Origin:</b>  Toronto
+    <br><br><b>Scientific name:</b> Felis catus
+    <br><br><b>Temperament:</b> Curious, Energetic, Cuddly, Intelligent, Affectionate, Extroverted
+    <br><br><b>Fun fact:</b> Wrinkle-skinned and hairless, Sphynx cats are loving attention-seekers with a unique charm.
+    <!--<br><br><b>Colors:</b> Bengals have a wild appearance; their golden shimmer comes from their leopard cat ancestry, and their coats may show spots, rosettes, arrowhead markings, or marbling. 
+    <br><br><b>Foundation bloodstock: </b>Egyptian Mau, Abyssinian, and others (domestic); Asian leopard cat (wild)
+    --> 
+    
+    
+    </div>
+        </div>
+    
+    </div> <!--closing of supportedBreedsSection2-->
+    
+    
+    </div>
+
+<
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var selectedImage = document.getElementById('selected-image');
+                selectedImage.src = reader.result;
+                document.getElementById('image-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        document.getElementById('upload-image-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            
+            // Clear previous prediction results
+            clearPredictionResults();
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('prediction-error').textContent = data.error;
+                    document.getElementById('prediction-result').style.display = 'block';
+                } else {
+                    document.getElementById('prediction-error').textContent = '';
+                    document.getElementById('breed1').textContent = data.breed_1 ? `${data.breed_1.name}: ${data.breed_1.confidence}` : 'Unknown';
+                    document.getElementById('breed2').textContent = data.breed_2 ? `${data.breed_2.name}: ${data.breed_2.confidence}` : '';
+                    document.getElementById('breed3').textContent = data.breed_3 ? `${data.breed_3.name}: ${data.breed_3.confidence}` : '';
+                    document.getElementById('health').textContent = data.health;
+                    document.getElementById('emotion').textContent = data.emotion;
+                    document.getElementById('age').textContent = data.age;
+                    document.getElementById('gender').textContent = data.gender;
+                    document.getElementById('faces').textContent = `Number of detected cat faces: ${data.num_faces}`;
+                    document.getElementById('health-confidence').textContent = data.health_confidence + '%';
+                    document.getElementById('emotion-confidence').textContent = data.emotion_confidence + '%';
+                    document.getElementById('age-confidence').textContent = data.age_confidence + '%';
+                    document.getElementById('gender-confidence').textContent = data.gender_confidence + '%';
+                    document.getElementById('prediction-result').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Clear button functionality
+        document.getElementById('clear-button').addEventListener('click', function() {
+            document.getElementById('upload-image-form').reset(); // Reset the form
+            document.getElementById('image-preview').style.display = 'none'; // Hide the image preview
+            document.getElementById('prediction-result').style.display = 'none'; // Hide the prediction result
+            clearPredictionResults(); // Clear prediction results
+        });
+
+        function clearPredictionResults() {
+            document.getElementById('breed1').textContent = '';
+            document.getElementById('breed2').textContent = '';
+            document.getElementById('breed3').textContent = '';
+            document.getElementById('health').textContent = '';
+            document.getElementById('emotion').textContent = '';
+            document.getElementById('age').textContent = '';
+            document.getElementById('gender').textContent = '';
+            document.getElementById('faces').textContent = 'Number of detected cat faces:';
+            document.getElementById('health-confidence').textContent = '';
+            document.getElementById('emotion-confidence').textContent = '';
+            document.getElementById('age-confidence').textContent = '';
+            document.getElementById('gender-confidence').textContent = '';
+        }
+    </script>
+   
+    
+</body>
+</html>
+
+
+
+
+
+
+
