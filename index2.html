@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Catalog</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #dc2f55;
+            text-align: center;
+        }
+
+        .form {
+            background-color: #15172b;
+            border-radius: 20px;
+            box-sizing: border-box;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            color: #eee;
+        }
+
+        .form input[type="file"],
+        .form input[type="text"],
+        .form textarea,
+        .form input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #1e2139;
+            color: #eee;
+            font-size: 16px;
+        }
+
+        .form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #dc2f55;
+            color: #eee;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form input[type="submit"]:hover {
+            background-color: #aa2353;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #dc2f55;
+            color: #eee;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .cat-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .cat {
+            width: calc(33.33% - 20px);
+            margin: 10px;
+            padding: 20px;
+            background-color: #15172b;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .cat img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cat-details {
+            color: #eee;
+        }
+
+        .cat-details p {
+            margin: 5px 0;
+        }
+
+        .cat form {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cat form input[type="text"],
+        .cat form textarea,
+        .cat form input[type="password"] {
+            width: calc(50% - 10px);
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1e2139;
+            color: #eee;
+            font-size: 14px;
+        }
+
+        .cat form input[type="submit"] {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #dc2f55;
+            color: #eee;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cat form input[type="submit"]:hover {
+            background-color: #aa2353;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <h2>Add Cat</h2>
+    <div class="form">
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" required>
+            <input type="text" name="breed" placeholder="Breed" required>
+            <input type="text" name="gender" placeholder="Gender" required>
+            <input type="text" name="age" placeholder="Age" required>
+            <textarea name="stamina" placeholder="Stamina" required></textarea>
+            <input type="text" name="emotion" placeholder="Emotion" required>
+            <!-- Admin password field -->
+            <input type="password" name="admin_password" placeholder="Admin Password" required>
+            <input type="submit" name="add_cat" value="Add Cat">
+        </form>
+    </div>
+
+    <h2>Cat List</h2>
+    <div class="cat-container">
+        {% for cat in cats %}
+            <div class="cat">
+                <img src="{{ cat[1] }}" alt="Cat Image">
+                <div class="cat-details">
+                    <p><strong>Breed:</strong> {{ cat[2] }}</p>
+                    <p><strong>Gender:</strong> {{ cat[3] }}</p>
+                    <p><strong>Age:</strong> {{ cat[4] }}</p>
+                    <p><strong>Stamina:</strong> {{ cat[5] }}</p>
+                    <p><strong>Emotion:</strong> {{ cat[6] }}</p>
+                </div>
+                <form action="/" method="post">
+                    <input type="hidden" name="cat_id" value="{{ cat[0] }}">
+                    <input type="text" name="edit_breed" placeholder="Edit Breed" value="{{ cat[2] }}" required>
+                    <input type="text" name="edit_gender" placeholder="Edit Gender" value="{{ cat[3] }}" required>
+                    <input type="text" name="edit_age" placeholder="Edit Age" value="{{ cat[4] }}" required>
+                    <textarea name="edit_stamina" placeholder="Edit Stamina" required>{{ cat[5] }}</textarea>
+                    <input type="text" name="edit_emotion" placeholder="Edit Emotion" value="{{ cat[6] }}" required>
+                    <!-- Admin password field -->
+                    <input type="password" name="admin_password" placeholder="Admin Password" required>
+                    <input type="submit" name="edit_cat" value="Update">
+                    <input type="submit" name="delete_cat" value="Delete">
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
