@@ -115,12 +115,15 @@
   </style>
 </head>
 <body>
+<!-- Anchor tag to mark the top of the page -->
+    
      <!-- Links -->
      <a href="#container">Unlock the Secrets of Feline Destiny</a>
      <a href="#supportedBreedsSection2">Supported Breeds</a>
 	 <a href="#catCare">Perfect Care</a>
      <a href="#catData">Delve into the Mystical World of Cats</a>
 	 <a href="#containerTwo">Feedback</a>
+	 <a id="top" hidden></a>
 <div id="firstPage">
      
   <div class="welcome-text">
@@ -355,7 +358,8 @@ body {
             <p><span class="label">Gender:</span> <span class="value" id="gender"></span></p>
             <p><span class="label">Gender confidence:</span> <span class="value" id="gender-confidence"></span></p>
         </div>
-        
+        <!-- Button to scroll to the top -->
+    <a id="scrollToTopBtn" href="#top">Top</a>
     </div>
     <br><br><br><br><br><br>
     <div id="supportedBreedsSection2"><br><br>
@@ -544,7 +548,8 @@ body {
         </div>
     
     </div> <!--closing of supportedBreedsSection2-->
-    
+            <!-- Button to scroll to the top -->
+    <a id="scrollToTopBtn" href="#top">Top</a>
     
     </div>
 
@@ -811,10 +816,11 @@ tr:nth-child(odd) {
     
     
 </table>
-
+        <!-- Button to scroll to the top -->
+    <a id="scrollToTopBtn" href="#top">Top</a>
 
 </div>
-
+        
 
 
 
@@ -1028,6 +1034,8 @@ tr:nth-child(odd) {
            {% endfor %}
        </div>
        </div>
+	           <!-- Button to scroll to the top -->
+    <a id="scrollToTopBtn" href="#top">Top</a>
    </body>
    </html>
    
@@ -1125,7 +1133,8 @@ tr:nth-child(odd) {
         <h2>Feedback Received:</h2>
         <div id="feedback-list"></div>
     </div>
-
+        <!-- Button to scroll to the top -->
+    <a id="scrollToTopBtn" href="#top">Top</a>
     <script>
         // Load stored feedback on page load
         window.onload = function() {
