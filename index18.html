@@ -1057,7 +1057,6 @@ tr:nth-child(odd) {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			background-color: ; /* Light blue background color for the feedback form */
         }
 
         h1, h2 {
@@ -1096,8 +1095,8 @@ tr:nth-child(odd) {
         #feedback-list p {
             margin: 5px 0;
         }
-		
-		/* Style for the image */
+
+        /* Style for the image */
         #feedBackImage {
             text-align: center;
             margin-top: 20px;
@@ -1110,9 +1109,10 @@ tr:nth-child(odd) {
     </style>
 </head>
 <body>
+<br><br><br>
     <div id="containerTwo">
         <h1>Feedback Form</h1>
-		<!-- Image Container -->
+        <!-- Image Container -->
         <div id="feedBackImage">
             <img src="{{ url_for('static', filename='feedback.png') }}" alt="Image Description">
         </div>
@@ -1126,15 +1126,34 @@ tr:nth-child(odd) {
         <div id="feedback-list"></div>
     </div>
 
-     <script>
+    <script>
         // Load stored feedback on page load
         window.onload = function() {
             loadFeedback();
         };
 
+        function hasProfanity(feedback) {
+            // List of prohibited words
+            var prohibitedWords = ['kill', 'destroy', 'ruin']; // Add more words as needed
+
+            // Check if feedback contains any prohibited words
+            for (var i = 0; i < prohibitedWords.length; i++) {
+                if (feedback.toLowerCase().includes(prohibitedWords[i])) {
+                    return true; // Feedback contains prohibited word
+                }
+            }
+            return false; // No prohibited words found
+        }
+
         function submitFeedback() {
             var feedbackText = document.getElementById('feedback').value;
             if (feedbackText.trim() !== '') {
+                // Check for profanity before submission
+                if (hasProfanity(feedbackText)) {
+                    alert('Your feedback contains prohibited words. Please revise it.');
+                    return; // Prevent submission
+                }
+
                 var feedbackList = document.getElementById('feedback-list');
                 var feedbackItem = document.createElement('p');
                 var date = new Date();
@@ -1165,6 +1184,7 @@ tr:nth-child(odd) {
     </script>
 </body>
 </html>
+
 
 
 
