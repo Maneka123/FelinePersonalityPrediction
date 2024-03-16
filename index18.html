@@ -77,6 +77,10 @@
     a:nth-of-type(4) {
         background-color: #9370db; /* Medium purple */
     }
+	
+	a:nth-of-type(5) {
+        background-color: #B53131; /* Medium purple */
+    }
 
     /* Hover effect */
     a:hover {
@@ -116,7 +120,7 @@
      <a href="#supportedBreedsSection2">Supported Breeds</a>
 	 <a href="#catCare">Perfect Care</a>
      <a href="#catData">Delve into the Mystical World of Cats</a>
-	 
+	 <a href="#containerTwo">Feedback</a>
 <div id="firstPage">
      
   <div class="welcome-text">
@@ -1030,8 +1034,137 @@ tr:nth-child(odd) {
    
 </body>
 </html>
+<!--feedback-->
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black; /* Light blue background color for the feedback form */
+            margin: 0;
+            padding: 0;
+        }
 
+        #containerTwo {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			background-color: ; /* Light blue background color for the feedback form */
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        #feedback {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #feedback-list {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        #feedback-list p {
+            margin: 5px 0;
+        }
+		
+		/* Style for the image */
+        #feedBackImage {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #feedBackImage img {
+            max-width: 20%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="containerTwo">
+        <h1>Feedback Form</h1>
+		<!-- Image Container -->
+        <div id="feedBackImage">
+            <img src="{{ url_for('static', filename='feedback.png') }}" alt="Image Description">
+        </div>
+        <!-- End of Image Container -->
+        <div>
+            <textarea id="feedback" rows="4" placeholder="Enter your feedback..."></textarea><br>
+            <button onclick="submitFeedback()">Submit</button>
+        </div>
+
+        <h2>Feedback Received:</h2>
+        <div id="feedback-list"></div>
+    </div>
+
+     <script>
+        // Load stored feedback on page load
+        window.onload = function() {
+            loadFeedback();
+        };
+
+        function submitFeedback() {
+            var feedbackText = document.getElementById('feedback').value;
+            if (feedbackText.trim() !== '') {
+                var feedbackList = document.getElementById('feedback-list');
+                var feedbackItem = document.createElement('p');
+                var date = new Date();
+                var formattedDate = date.toLocaleString();
+                feedbackItem.textContent = feedbackText + ' - ' + formattedDate;
+
+                // Store feedback in local storage
+                var feedbackArray = JSON.parse(localStorage.getItem('feedback')) || [];
+                feedbackArray.push(feedbackItem.textContent);
+                localStorage.setItem('feedback', JSON.stringify(feedbackArray));
+
+                feedbackList.appendChild(feedbackItem);
+                document.getElementById('feedback').value = ''; // Clear the textarea after submission
+            } else {
+                alert('Please enter your feedback!');
+            }
+        }
+
+        function loadFeedback() {
+            var feedbackList = document.getElementById('feedback-list');
+            var storedFeedback = JSON.parse(localStorage.getItem('feedback')) || [];
+            storedFeedback.forEach(function(feedback) {
+                var feedbackItem = document.createElement('p');
+                feedbackItem.textContent = feedback;
+                feedbackList.appendChild(feedbackItem);
+            });
+        }
+    </script>
+</body>
+</html>
 
 
 
